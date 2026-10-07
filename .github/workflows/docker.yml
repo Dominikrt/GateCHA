@@ -90,13 +90,15 @@ jobs:
           fi
 
       - name: Build and push
-        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        uses: docker/bake-action@v7
+        env:
+          TAG: ${{ steps.meta.outputs.tags }}
+          VERSION: ${{ steps.version.outputs.value }}
         with:
-          context: .
-          build-args: |
-            VERSION=${{ steps.version.outputs.value }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          targets: default
+          set: |
+            app.platforms=linux/amd64
